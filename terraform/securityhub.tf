@@ -3,10 +3,12 @@ data "aws_caller_identity" "current" {}
 resource "aws_securityhub_account" "main" {}
 
 resource "aws_securityhub_standards_subscription" "cis" {
+  depends_on    = [aws_securityhub_account.main]
   standards_arn = "arn:aws:securityhub:::standards/cis-aws-foundations-benchmark/v/1.2.0"
 }
 
 resource "aws_securityhub_standards_subscription" "aws_best_practices" {
+  depends_on    = [aws_securityhub_account.main]
   standards_arn = "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0"
 }
 
@@ -38,10 +40,10 @@ resource "aws_iam_role" "config" {
 
 resource "aws_iam_role_policy_attachment" "config_policy" {
   role       = aws_iam_role.config.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
 }
 
 resource "aws_config_configuration_recorder" "main" {
-  name     = "default"
+  name     = "aws-configs"
   role_arn = aws_iam_role.config.arn
 }
