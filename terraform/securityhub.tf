@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_securityhub_account" "main" {}
 
 resource "aws_securityhub_standards_subscription" "cis" {
