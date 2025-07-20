@@ -66,22 +66,26 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid: "AWSConfigFullAccessPut",
+        Sid: "AWSConfigBucketAclCheck",
         Effect: "Allow",
         Principal: {
           Service: "config.amazonaws.com"
         },
         Action: [
-          "s3:PutObject",
           "s3:GetBucketAcl",
           "s3:ListBucket",
-          "s3:GetBucketLocation",
-          "s3:PutObjectAcl"
+          "s3:GetBucketLocation"
         ],
-        Resource: [
-          "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}",
-          "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/*"
-        ],
+        Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}"
+      },
+      {
+        Sid: "AWSConfigBucketWrite",
+        Effect: "Allow",
+        Principal: {
+          Service: "config.amazonaws.com"
+        },
+        Action: "s3:PutObject",
+        Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*",
         Condition: {
           StringEquals: {
             "s3:x-amz-acl": "bucket-owner-full-control"
@@ -98,12 +102,17 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
 resource "aws_config_delivery_channel" "main" {
   name           = "channel-delivery"
   s3_bucket_name = aws_s3_bucket.config_bucket.bucket
-  s3_key_prefix  = "${data.aws_caller_identity.current.account_id}/Config"
-  depends_on     = [aws_config_configuration_recorder.main]
+  s3_key_prefix  = "AWSLogs/${data.aws_caller_identity.current.account_id}/Config"
+  depends_on     = [
+    aws_s3_bucket_policy.config_bucket_policy,
+    aws_config_configuration_recorder.main
+  ]
 }
 
+
 resource "aws_config_configuration_recorder_status" "main" {
-  name    = aws_config_configuration_recorder.main.name
+  name       = aws_config_configuration_recorder.main.name
   is_enabled = true
+
   depends_on = [aws_config_delivery_channel.main]
 }
