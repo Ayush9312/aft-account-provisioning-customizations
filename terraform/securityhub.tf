@@ -59,6 +59,43 @@ resource "aws_s3_bucket" "config_bucket" {
   }
 }
 
+#resource "aws_s3_bucket_policy" "config_bucket_policy" {
+#  bucket = aws_s3_bucket.config_bucket.id
+#
+#  policy = jsonencode({
+#    Version = "2012-10-17",
+#    Statement = [
+#      {
+#        Sid: "AWSConfigBucketAclCheck",
+#        Effect: "Allow",
+#        Principal: {
+#          Service: "config.amazonaws.com"
+#        },
+#        Action: [
+#          "s3:GetBucketAcl",
+#          "s3:ListBucket",
+#          "s3:GetBucketLocation"
+#        ],
+#        Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}"
+#      },
+#      {
+#        Sid: "AWSConfigBucketWrite",
+#        Effect: "Allow",
+#        Principal: {
+#          Service: "config.amazonaws.com"
+#        },
+#        Action: "s3:PutObject",
+#        Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*",
+#        Condition: {
+#          StringEquals: {
+#            "s3:x-amz-acl": "bucket-owner-full-control"
+#          }
+#        }
+#      }
+#    ]
+#  })
+#}
+
 resource "aws_s3_bucket_policy" "config_bucket_policy" {
   bucket = aws_s3_bucket.config_bucket.id
 
@@ -66,26 +103,18 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid: "AWSConfigBucketAclCheck",
+        Sid: "AWSConfigBucketPermissionsCheck",
         Effect: "Allow",
-        Principal: {
-          Service: "config.amazonaws.com"
-        },
-        Action: [
-          "s3:GetBucketAcl",
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
-        ],
+        Principal: { Service: "config.amazonaws.com" },
+        Action: "s3:GetBucketAcl",
         Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}"
       },
       {
-        Sid: "AWSConfigBucketWrite",
+        Sid: "AWSConfigBucketDelivery",
         Effect: "Allow",
-        Principal: {
-          Service: "config.amazonaws.com"
-        },
+        Principal: { Service: "config.amazonaws.com" },
         Action: "s3:PutObject",
-        Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*",
+        Resource: "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/config/*",
         Condition: {
           StringEquals: {
             "s3:x-amz-acl": "bucket-owner-full-control"
@@ -95,7 +124,6 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
     ]
   })
 }
-
 
 
 
