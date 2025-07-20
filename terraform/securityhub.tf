@@ -4,7 +4,7 @@ resource "aws_securityhub_account" "main" {}
 
 resource "aws_securityhub_standards_subscription" "cis" {
   depends_on    = [aws_securityhub_account.main]
-  standards_arn = "arn:aws:securityhub:eu-central-1::standards/cis-aws-foundations-benchmark/v/1.2.0"
+  standards_arn = "arn:aws:securityhub:eu-central-1:071844616048:standards/cis-aws-foundations-benchmark/v/1.2.0"
 }
 
 resource "aws_securityhub_standards_subscription" "aws_best_practices" {
@@ -47,4 +47,17 @@ resource "aws_iam_role_policy_attachment" "config_policy" {
 resource "aws_config_configuration_recorder" "main" {
   name     = "aws-configs"
   role_arn = aws_iam_role.config.arn
+}
+
+
+resource "aws_config_delivery_channel" "main" {
+  name           = "channel-delivery"
+  s3_bucket_name = "aft-backend-071844616048-primary-region"
+  depends_on     = [aws_config_configuration_recorder.main]
+}
+
+resource "aws_config_configuration_recorder_status" "main" {
+  name    = aws_config_configuration_recorder.main.name
+  is_enabled = true
+  depends_on = [aws_config_delivery_channel.main]
 }
