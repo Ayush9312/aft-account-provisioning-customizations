@@ -49,59 +49,59 @@ resource "aws_config_configuration_recorder" "main" {
   role_arn = aws_iam_role.config.arn
 }
 
-resource "aws_s3_bucket" "config_bucket" {
-  bucket = "aft-config-delivery-${data.aws_caller_identity.current.account_id}-eu-central-1"
-  force_destroy = true
-
-  tags = {
-    Name        = "AFT Config Delivery Bucket"
-    Environment = "AFT"
-  }
-}
-
-resource "aws_s3_bucket_policy" "config_bucket_policy" {
-  bucket = aws_s3_bucket.config_bucket.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Sid       = "AWSConfigBucketPermissionsCheck",
-        Effect    = "Allow",
-        Principal = {
-          Service = "config.amazonaws.com"
-        },
-        Action    = "s3:GetBucketAcl",
-        Resource  = "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}"
-      },
-      {
-        Sid       = "AWSConfigBucketDelivery",
-        Effect    = "Allow",
-        Principal = {
-          Service = "config.amazonaws.com"
-        },
-        Action    = "s3:PutObject",
-        Resource  = "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*",
-        Condition = {
-          StringEquals = {
-            "s3:x-amz-acl" = "bucket-owner-full-control"
-          }
-        }
-      }
-    ]
-  })
-}
-
-
-resource "aws_config_delivery_channel" "main" {
-  name           = "channel-delivery"
-  s3_bucket_name = aws_s3_bucket.config_bucket.bucket
-  s3_key_prefix  = "${data.aws_caller_identity.current.account_id}/Config"
-  depends_on     = [aws_config_configuration_recorder.main]
-}
-
-resource "aws_config_configuration_recorder_status" "main" {
-  name    = aws_config_configuration_recorder.main.name
-  is_enabled = true
-  depends_on = [aws_config_delivery_channel.main]
-}
+#resource "aws_s3_bucket" "config_bucket" {
+#  bucket = "aft-config-delivery-${data.aws_caller_identity.current.account_id}-eu-central-1"
+#  force_destroy = true
+#
+#  tags = {
+#    Name        = "AFT Config Delivery Bucket"
+#    Environment = "AFT"
+#  }
+#}
+#
+#resource "aws_s3_bucket_policy" "config_bucket_policy" {
+#  bucket = aws_s3_bucket.config_bucket.id
+#
+#  policy = jsonencode({
+#    Version = "2012-10-17",
+#    Statement = [
+#      {
+#        Sid       = "AWSConfigBucketPermissionsCheck",
+#        Effect    = "Allow",
+#        Principal = {
+#          Service = "config.amazonaws.com"
+#        },
+#        Action    = "s3:GetBucketAcl",
+#        Resource  = "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}"
+#      },
+#      {
+#        Sid       = "AWSConfigBucketDelivery",
+#        Effect    = "Allow",
+#        Principal = {
+#          Service = "config.amazonaws.com"
+#        },
+#        Action    = "s3:PutObject",
+#        Resource  = "arn:aws:s3:::${aws_s3_bucket.config_bucket.id}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*",
+#        Condition = {
+#          StringEquals = {
+#            "s3:x-amz-acl" = "bucket-owner-full-control"
+#          }
+#        }
+#      }
+#    ]
+#  })
+#}
+#
+#
+#resource "aws_config_delivery_channel" "main" {
+#  name           = "channel-delivery"
+#  s3_bucket_name = aws_s3_bucket.config_bucket.bucket
+#  s3_key_prefix  = "${data.aws_caller_identity.current.account_id}/Config"
+#  depends_on     = [aws_config_configuration_recorder.main]
+#}
+#
+#resource "aws_config_configuration_recorder_status" "main" {
+#  name    = aws_config_configuration_recorder.main.name
+#  is_enabled = true
+#  depends_on = [aws_config_delivery_channel.main]
+#}
