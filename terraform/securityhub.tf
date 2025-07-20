@@ -2,10 +2,10 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_securityhub_account" "main" {}
 
-resource "aws_securityhub_standards_subscription" "cis" {
-  depends_on    = [aws_securityhub_account.main]
-  standards_arn = "arn:aws:securityhub:eu-central-1:071844616048:standards/cis-aws-foundations-benchmark/v/1.2.0"
-}
+#resource "aws_securityhub_standards_subscription" "cis" {
+#  depends_on    = [aws_securityhub_account.main]
+#  standards_arn = "arn:aws:securityhub:eu-central-1:071844616048:standards/cis-aws-foundations-benchmark/v/1.2.0"
+#}
 
 resource "aws_securityhub_standards_subscription" "aws_best_practices" {
   depends_on    = [aws_securityhub_account.main]
@@ -96,7 +96,7 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
 resource "aws_config_delivery_channel" "main" {
   name           = "channel-delivery"
   s3_bucket_name = aws_s3_bucket.config_bucket.bucket
-  s3_key_prefix  = "AWSLogs/${data.aws_caller_identity.current.account_id}/Config"
+  s3_key_prefix  = "${data.aws_caller_identity.current.account_id}/Config"
   depends_on     = [aws_config_configuration_recorder.main]
 }
 
