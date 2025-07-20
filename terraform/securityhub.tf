@@ -102,7 +102,7 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
 resource "aws_config_delivery_channel" "main" {
   name           = "channel-delivery"
   s3_bucket_name = aws_s3_bucket.config_bucket.bucket
-  s3_key_prefix  = "AWSLogs/${data.aws_caller_identity.current.account_id}/Config"
+
   depends_on     = [
     aws_s3_bucket_policy.config_bucket_policy,
     aws_config_configuration_recorder.main
