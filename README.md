@@ -6,7 +6,7 @@ AFT provides flexibility to customize the provisioning process for new accounts 
 
 While the customization stage does include integrations for pre- and post- customization steps, the Account Provisioning standard allows for further integration by using an AWS Step Functions State Machine to integrate with additional environments.
 
-Using this state machine integration, customers may define Account Provisioning Customizations steps as:
+Using this state machine integration, customers/clients may define Account Provisioning Customizations steps as:
 
 * Lambda functions in the language of their choice
 * ECS or Fargate Tasks using docker containers
