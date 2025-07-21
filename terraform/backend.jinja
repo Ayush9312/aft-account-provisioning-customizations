@@ -1,6 +1,8 @@
 ## Auto generated backend.tf ##
 ## Updated on: {{ timestamp }} ##
 
+#### backend block ####
+
 {% if tf_distribution_type == "oss" -%}
 terraform {
   required_version = ">= {{ tf_version }}"

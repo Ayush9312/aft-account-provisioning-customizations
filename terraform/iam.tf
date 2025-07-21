@@ -14,3 +14,6 @@ resource "aws_iam_role_policy" "aft_states" {
     account_provisioning_customizations_sfn_arn = aws_sfn_state_machine.aft_account_provisioning_customizations.arn
   })
 }
+
+
+### account provisioning customization role ###

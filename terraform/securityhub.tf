@@ -144,3 +144,7 @@ resource "aws_config_configuration_recorder_status" "main" {
 
   depends_on = [aws_config_delivery_channel.main]
 }
+
+
+
+### security hub, guard duty, inspector, s3 bucket policy, config delivery channel ####
